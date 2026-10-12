@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎬 Movie Recommendation System</h1>
+
+        <p class="subtitle">
+            Discover movies similar to your favourite movie.
+        </p>
+
+        <form method="POST" action="{{ url_for('home') }}">
+            <input
+                type="text"
+                name="movie_name"
+                placeholder="Enter a movie title, e.g. Batman"
+                value="{{ movie_name }}"
+                required
+                autocomplete="off"
+            >
+
+            <button type="submit">Recommend Movies</button>
+        </form>
+
+        {% if error_message %}
+            <div class="message error" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        {% if matched_title %}
+            <h2>Movies similar to "{{ matched_title }}"</h2>
+
+            {% if recommendations %}
+                <div class="recommendations">
+                    {% for movie in recommendations %}
+                        <div class="movie-card">
+                            <h3>{{ loop.index }}. {{ movie["title"] }}</h3>
+
+                            <p>
+                                <strong>Genres:</strong>
+                                {{ movie["genres"] }}
+                            </p>
+
+                            <p>
+                                <strong>Cosine Similarity:</strong>
+                                {{ "%.4f"|format(movie["similarity"]) }}
+                            </p>
+
+                            <div
+                                class="progress"
+                                role="progressbar"
+                                aria-label="Genre similarity score"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="{{ (movie['similarity'] * 100) | round | int }}"
+                            >
+                                <div
+                                    class="progress-fill"
+                                    style="width: {{ (movie['similarity'] * 100) | round(2) }}%;"
+                                ></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <footer>
+            <p>Movie Recommendation System | Built with Flask and Machine Learning</p>
+        </footer>
+    </div>
+</body>
+</html>
